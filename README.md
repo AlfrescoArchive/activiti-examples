@@ -12,7 +12,7 @@ Illustration of using the activiti-spring integration to use spring (not spring 
 
 ## Note on Spring Boot 
 
-For spring boot use activiti-cloud-starter-runtime-bundle if cloud (includes integration with other cloud components) or activiti-cloud-starter-configure if not cloud. This replaces spring-boot-starter-basic - spring boot usage should otherwise be as per v6. For v6 explanation and examples see:
+For spring boot use activiti-cloud-starter-runtime-bundle if cloud (includes integration with other cloud components) or activiti-cloud-starter-configure if not cloud. The starter activiti-cloud-starter-configure replaces spring-boot-starter-basic - spring boot usage should otherwise be as per v6. For v6 explanation and examples see:
  
 http://www.baeldung.com/spring-activiti
 https://spring.io/blog/2015/03/08/getting-started-with-activiti-and-spring-boot
