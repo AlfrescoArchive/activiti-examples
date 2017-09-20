@@ -8,6 +8,10 @@
   <packaging>pom</packaging>
   <version>7-201708-EA-SNAPSHOT</version>
 
+  <properties>
+    <maven.release.plugin.version>2.5.3</maven.release.plugin.version>
+  </properties>
+
   <modules>
     <module>emergency-call-center</module>
     <module>loan-request</module>
@@ -40,7 +44,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-release-plugin</artifactId>
-          <version>${maven-release-plugin.version}</version>
+          <version>${maven.release.plugin.version}</version>
           <configuration>
             <releaseProfiles>sign</releaseProfiles>
             <autoVersionSubmodules>true</autoVersionSubmodules>
