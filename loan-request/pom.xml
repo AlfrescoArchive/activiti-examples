@@ -7,7 +7,7 @@
   <groupId>org.activiti</groupId>
 
   <packaging>jar</packaging>
-  <version>7-201708-EA</version>
+  <version>7-201708-EA-SNAPSHOT</version>
 
   <properties>
     <version.activiti>${project.version}</version.activiti>
@@ -29,6 +29,17 @@
       </releases>
       <snapshots>
         <enabled>false</enabled>
+      </snapshots>
+    </repository>
+    <repository>
+      <id>activiti-snapshots</id>
+      <name>Activiti Snapshots</name>
+      <url>https://artifacts.alfresco.com/nexus/content/repositories/activiti-snapshots/</url>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
       </snapshots>
     </repository>
   </repositories>

@@ -6,11 +6,74 @@
   <groupId>org.activiti</groupId>
   <artifactId>activiti-examples-root</artifactId>
   <packaging>pom</packaging>
-  <version>7-201708-EA</version>
+  <version>7-201708-EA-SNAPSHOT</version>
 
   <modules>
     <module>emergency-call-center</module>
     <module>loan-request</module>
   </modules>
+
+  <scm>
+    <url>https://github.com/Activiti/activiti-examples</url>
+    <connection>scm:git:https://github.com/Activiti/activiti-examples.git</connection>
+    <developerConnection>scm:git:https://github.com/Activiti/activiti-examples.git</developerConnection>
+    <tag>HEAD</tag>
+  </scm>
+
+
+  <distributionManagement>
+    <repository>
+      <id>activiti-alfresco-releases</id>
+      <name>Alfresco internal repo</name>
+      <url>https://artifacts.alfresco.com/nexus/content/repositories/activiti-releases/</url>
+    </repository>
+    <snapshotRepository>
+      <id>activiti-enterprise-snapshots</id>
+      <name>Activiti Snapshots</name>
+      <url>https://artifacts.alfresco.com/nexus/content/repositories/activiti-snapshots/</url>
+    </snapshotRepository>
+  </distributionManagement>
+
+  <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-release-plugin</artifactId>
+          <version>${maven-release-plugin.version}</version>
+          <configuration>
+            <releaseProfiles>sign</releaseProfiles>
+            <autoVersionSubmodules>true</autoVersionSubmodules>
+            <tagNameFormat>activiti-@{project.version}</tagNameFormat>
+            <!-- Necessary until keycloak releases boot2 adaptor -->
+            <allowTimestampedSnapshots>true</allowTimestampedSnapshots>
+          </configuration>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+  </build>
+
+  <profiles>
+    <!-- Profile to sign artifacts, triggered when releasing -->
+    <profile>
+      <id>sign</id>
+      <build>
+        <plugins>
+          <plugin>
+            <artifactId>maven-gpg-plugin</artifactId>
+            <version>${maven-gpg-plugin.version}</version>
+            <executions>
+              <execution>
+                <id>sign-artifacts</id>
+                <goals>
+                  <goal>sign</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 
 </project>
