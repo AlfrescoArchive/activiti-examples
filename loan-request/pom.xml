@@ -6,8 +6,13 @@
 
   <groupId>org.activiti</groupId>
 
+  <parent>
+    <groupId>org.activiti</groupId>
+    <artifactId>activiti-examples-root</artifactId>
+    <version>7-201708-EA-SNAPSHOT</version>
+  </parent>
+
   <packaging>jar</packaging>
-  <version>7-201708-EA-SNAPSHOT</version>
 
   <properties>
     <version.activiti>${project.version}</version.activiti>
