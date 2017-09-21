@@ -10,6 +10,7 @@
 
   <properties>
     <maven.release.plugin.version>2.5.3</maven.release.plugin.version>
+    <maven-gpg-plugin.version>1.6</maven-gpg-plugin.version>
   </properties>
 
   <modules>
@@ -27,7 +28,7 @@
 
   <distributionManagement>
     <repository>
-      <id>activiti-alfresco-releases</id>
+      <id>activiti-enterprise-snapshots</id>
       <name>Alfresco internal repo</name>
       <url>https://artifacts.alfresco.com/nexus/content/repositories/activiti-releases/</url>
     </repository>
