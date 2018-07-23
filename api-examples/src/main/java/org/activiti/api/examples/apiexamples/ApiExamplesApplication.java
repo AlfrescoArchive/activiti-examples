@@ -7,8 +7,9 @@ import org.activiti.runtime.api.conf.ProcessRuntimeConfiguration;
 import org.activiti.runtime.api.connector.Connector;
 import org.activiti.runtime.api.model.ProcessDefinition;
 import org.activiti.runtime.api.model.ProcessInstance;
-import org.activiti.runtime.api.model.builder.PayloadBuilder;
+import org.activiti.runtime.api.model.builder.ProcessPayloadBuilder;
 import org.activiti.runtime.api.query.Page;
+import org.activiti.runtime.api.query.Pageable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -25,78 +26,89 @@ public class ApiExamplesApplication implements CommandLineRunner {
         SpringApplication.run(ApiExamplesApplication.class,
                               args);
     }
-//
-//    @Override
-//    public void run(String... args) throws Exception {
-//        ProcessRuntimeConfiguration configuration = processRuntime.configuration();
-//
-//
-//        // @TODO: configuration should also have the directory from where the processes are being picked up
-//        // @TODO: configuration can also have the default page size for the service calls
-//        System.out.println("Configuration: " + configuration);
-//
-//        Page<FluentProcessDefinition> fluentProcessDefinitionPage =
-//                processRuntime.processDefinitions();
-//
-//        for (FluentProcessDefinition pd : fluentProcessDefinitionPage.getContent()) {
-//            System.out.println("Process Definition: " + pd);
-//        }
-//
-//        FluentProcessInstance fluentProcessInstance = processRuntime
-//                .processDefinitionByKey("categorizeProcess")
-//                .startProcessWith()
-//                .variable("var",
-//                          "value")
-//                .doIt();
-//
-//        System.out.println("Process Instance: " + fluentProcessInstance);
-//    }
 
     public void run(String... args) throws Exception {
         ProcessRuntimeConfiguration configuration = processRuntime.configuration();
 
         Page<ProcessDefinition> processDefinitionPage =
-                processRuntime.processDefinitions();
+                processRuntime.processDefinitions(Pageable.of(0,
+                                                              50));
 
         for (ProcessDefinition pd : processDefinitionPage.getContent()) {
             System.out.println("Process Definition: " + pd);
         }
 
-        ProcessInstance startedAndCompletedPi = processRuntime.start(PayloadBuilder.start()
-                                                                 .withProcessDefinitionKey("categorizeProcess")
-                                                                 .withVariables(new HashMap<>())
-                                                                 .withBusinessKey("my key").build());
+        ProcessInstance startedAndCompletedPi = processRuntime.start(ProcessPayloadBuilder.start()
+                                                                             .withProcessDefinitionKey("categorizeProcess")
+                                                                             .withVariables(new HashMap<>())
+                                                                             .withBusinessKey("my key").build());
 
         System.out.println("startedAndCompletedPi - Process Instance: " + startedAndCompletedPi);
 
-        ProcessInstance startedPi = processRuntime.start(PayloadBuilder.start()
+        ProcessInstance startedPi = processRuntime.start(ProcessPayloadBuilder.start()
                                                                  .withProcessDefinitionKey("categorizeHumanProcess")
                                                                  .withVariables(new HashMap<>())
                                                                  .withBusinessKey("my key").build());
 
         System.out.println("startedPi - Process Instance: " + startedPi);
 
-        ProcessInstance suspendedPi = processRuntime.suspend(PayloadBuilder.suspend()
-                                                                     .withProcessInstance(startedPi)
-                                                                     .build());
+        ProcessInstance startedPi2 = processRuntime.start(ProcessPayloadBuilder.start()
+                                                                  .withProcessDefinitionKey("categorizeHumanProcess")
+                                                                  .withVariables(new HashMap<>())
+                                                                  .withBusinessKey("my key").build());
+
+        System.out.println("startedPi2 - Process Instance: " + startedPi);
+
+        ProcessInstance startedPi3 = processRuntime.start(ProcessPayloadBuilder.start()
+                                                                  .withProcessDefinitionKey("categorizeHumanProcess")
+                                                                  .withVariables(new HashMap<>())
+                                                                  .withBusinessKey("my key 2").build());
+
+        System.out.println("startedPi3 - Process Instance: " + startedPi);
+
+        ProcessInstance suspendedPi = processRuntime.suspend(ProcessPayloadBuilder.suspend(startedPi));
 
         System.out.println("suspendedPi - Process Instance: " + suspendedPi);
 
-        ProcessInstance resumedPi = processRuntime.resume(PayloadBuilder.resume()
+        ProcessInstance resumedPi = processRuntime.resume(ProcessPayloadBuilder.resume()
                                                                   .withProcessInstance(suspendedPi)
                                                                   .build());
 
         System.out.println("resumedPi - Process Instance: " + resumedPi);
 
-        ProcessInstance deletedPi = processRuntime.delete(PayloadBuilder.delete()
+        Page<ProcessInstance> processInstancePage = processRuntime.processInstances(Pageable.of(0,
+                                                                                                50));
+
+        System.out.println("Process Instances Count (1): " + processInstancePage.getTotalItems());
+
+        processInstancePage = processRuntime.processInstances(Pageable.of(0,
+                                                                          50),
+                                                              ProcessPayloadBuilder
+                                                                      .processInstances()
+                                                                      .withBusinessKey("my key")
+                                                                      .build());
+
+        System.out.println("Process Instances Count (2): " + processInstancePage.getTotalItems());
+
+        processInstancePage = processRuntime.processInstances(Pageable.of(0,
+                                                                          50),
+                                                              ProcessPayloadBuilder
+                                                                      .processInstances()
+                                                                      .withBusinessKey("my key 2")
+                                                                      .build());
+
+        System.out.println("Process Instances Count (3): " + processInstancePage.getTotalItems());
+
+        ProcessInstance deletedPi = processRuntime.delete(ProcessPayloadBuilder.delete()
                                                                   .withProcessInstance(suspendedPi)
                                                                   .build());
 
         System.out.println("deletedPi - Process Instance: " + deletedPi);
 
+        processInstancePage = processRuntime.processInstances(Pageable.of(0,
+                                                                          50));
 
-
-
+        System.out.println("Process Instances Count (4): " + processInstancePage.getTotalItems());
     }
 
     @Bean
