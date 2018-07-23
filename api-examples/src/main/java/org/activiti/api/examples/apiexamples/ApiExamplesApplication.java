@@ -3,10 +3,12 @@ package org.activiti.api.examples.apiexamples;
 import java.util.HashMap;
 
 import org.activiti.runtime.api.ProcessRuntime;
+import org.activiti.runtime.api.TaskRuntime;
 import org.activiti.runtime.api.conf.ProcessRuntimeConfiguration;
 import org.activiti.runtime.api.connector.Connector;
 import org.activiti.runtime.api.model.ProcessDefinition;
 import org.activiti.runtime.api.model.ProcessInstance;
+import org.activiti.runtime.api.model.Task;
 import org.activiti.runtime.api.model.builder.ProcessPayloadBuilder;
 import org.activiti.runtime.api.query.Page;
 import org.activiti.runtime.api.query.Pageable;
@@ -21,6 +23,9 @@ public class ApiExamplesApplication implements CommandLineRunner {
 
     @Autowired
     private ProcessRuntime processRuntime;
+
+    @Autowired
+    private TaskRuntime taskRuntime;
 
     public static void main(String[] args) {
         SpringApplication.run(ApiExamplesApplication.class,
@@ -98,6 +103,17 @@ public class ApiExamplesApplication implements CommandLineRunner {
                                                                       .build());
 
         System.out.println("Process Instances Count (3): " + processInstancePage.getTotalItems());
+
+
+
+        Page<Task> tasks = taskRuntime.tasks(Pageable.of(0,
+                                                         50));
+
+        System.out.println("Tasks Count: " + tasks.getTotalItems());
+
+        for (Task t : tasks.getContent()) {
+            System.out.println("Task: " + t);
+        }
 
         ProcessInstance deletedPi = processRuntime.delete(ProcessPayloadBuilder.delete()
                                                                   .withProcessInstance(suspendedPi)
