@@ -49,13 +49,13 @@
 
     <!-- needs refactoring -->
     <dependency>
-      <groupId>org.activiti.cloud</groupId>
-      <artifactId>activiti-cloud-starter-configure</artifactId>
+      <groupId>org.activiti</groupId>
+      <artifactId>activiti-spring-boot-starter</artifactId>
       <version>7-201803-EA-SNAPSHOT</version>
     </dependency>
     <dependency>
-      <groupId>org.activiti.cloud</groupId>
-      <artifactId>activiti-cloud-services-common-identity-basic</artifactId>
+      <groupId>org.activiti</groupId>
+      <artifactId>activiti-identity-basic</artifactId>
       <version>7-201803-EA-SNAPSHOT</version>
     </dependency>
 
