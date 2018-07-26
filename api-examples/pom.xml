@@ -37,16 +37,6 @@
 
   <dependencies>
 
-    <dependency>
-      <groupId>org.activiti</groupId>
-      <artifactId>activiti-process-runtime-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.activiti</groupId>
-      <artifactId>activiti-process-runtime-api-impl</artifactId>
-    </dependency>
-
-
     <!-- needs refactoring -->
     <dependency>
       <groupId>org.activiti</groupId>
