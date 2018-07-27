@@ -1,7 +1,5 @@
 package org.activiti.api.examples.apiexamples;
 
-import java.util.HashMap;
-
 import org.activiti.runtime.api.ProcessRuntime;
 import org.activiti.runtime.api.TaskRuntime;
 import org.activiti.runtime.api.conf.ProcessRuntimeConfiguration;
@@ -12,7 +10,6 @@ import org.activiti.runtime.api.model.Task;
 import org.activiti.runtime.api.model.builders.ProcessPayloadBuilder;
 import org.activiti.runtime.api.query.Page;
 import org.activiti.runtime.api.query.Pageable;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -21,11 +18,15 @@ import org.springframework.context.annotation.Bean;
 @SpringBootApplication
 public class ApiExamplesApplication implements CommandLineRunner {
 
-    @Autowired
-    private ProcessRuntime processRuntime;
+    private final ProcessRuntime processRuntime;
 
-    @Autowired
-    private TaskRuntime taskRuntime;
+    private final TaskRuntime taskRuntime;
+
+    public ApiExamplesApplication(ProcessRuntime processRuntime,
+                                  TaskRuntime taskRuntime) {
+        this.processRuntime = processRuntime;
+        this.taskRuntime = taskRuntime;
+    }
 
     public static void main(String[] args) {
         SpringApplication.run(ApiExamplesApplication.class,
@@ -43,43 +44,39 @@ public class ApiExamplesApplication implements CommandLineRunner {
             System.out.println("Process Definition: " + pd);
         }
 
-        ProcessInstance startedAndCompletedPi = processRuntime.start(ProcessPayloadBuilder.start()
+        ProcessInstance startedAndCompletedProcess = processRuntime.start(ProcessPayloadBuilder.start()
                                                                              .withProcessDefinitionKey("categorizeProcess")
-                                                                             .withVariables(new HashMap<>())
                                                                              .withBusinessKey("my key").build());
 
-        System.out.println("startedAndCompletedPi - Process Instance: " + startedAndCompletedPi);
+        System.out.println("startedAndCompletedProcess - Process Instance: " + startedAndCompletedProcess);
 
-        ProcessInstance startedPi = processRuntime.start(ProcessPayloadBuilder.start()
+        ProcessInstance startedProcess = processRuntime.start(ProcessPayloadBuilder.start()
                                                                  .withProcessDefinitionKey("categorizeHumanProcess")
-                                                                 .withVariables(new HashMap<>())
                                                                  .withBusinessKey("my key").build());
 
-        System.out.println("startedPi - Process Instance: " + startedPi);
+        System.out.println("startedProcess - Process Instance: " + startedProcess);
 
-        ProcessInstance startedPi2 = processRuntime.start(ProcessPayloadBuilder.start()
+        ProcessInstance startedProcess2 = processRuntime.start(ProcessPayloadBuilder.start()
                                                                   .withProcessDefinitionKey("categorizeHumanProcess")
-                                                                  .withVariables(new HashMap<>())
                                                                   .withBusinessKey("my key").build());
 
-        System.out.println("startedPi2 - Process Instance: " + startedPi);
+        System.out.println("startedProcess2 - Process Instance: " + startedProcess2);
 
-        ProcessInstance startedPi3 = processRuntime.start(ProcessPayloadBuilder.start()
+        ProcessInstance startedProcess3 = processRuntime.start(ProcessPayloadBuilder.start()
                                                                   .withProcessDefinitionKey("categorizeHumanProcess")
-                                                                  .withVariables(new HashMap<>())
                                                                   .withBusinessKey("my key 2").build());
 
-        System.out.println("startedPi3 - Process Instance: " + startedPi);
+        System.out.println("startedProcess3 - Process Instance: " + startedProcess3);
 
-        ProcessInstance suspendedPi = processRuntime.suspend(ProcessPayloadBuilder.suspend(startedPi));
+        ProcessInstance suspendedProcess = processRuntime.suspend(ProcessPayloadBuilder.suspend(startedProcess));
 
-        System.out.println("suspendedPi - Process Instance: " + suspendedPi);
+        System.out.println("suspendedProcess - Process Instance: " + suspendedProcess);
 
-        ProcessInstance resumedPi = processRuntime.resume(ProcessPayloadBuilder.resume()
-                                                                  .withProcessInstance(suspendedPi)
+        ProcessInstance resumedProcess = processRuntime.resume(ProcessPayloadBuilder.resume()
+                                                                  .withProcessInstance(suspendedProcess)
                                                                   .build());
 
-        System.out.println("resumedPi - Process Instance: " + resumedPi);
+        System.out.println("resumedProcess - Process Instance: " + resumedProcess);
 
         Page<ProcessInstance> processInstancePage = processRuntime.processInstances(Pageable.of(0,
                                                                                                 50));
@@ -115,11 +112,11 @@ public class ApiExamplesApplication implements CommandLineRunner {
             System.out.println("Task: " + t);
         }
 
-        ProcessInstance deletedPi = processRuntime.delete(ProcessPayloadBuilder.delete()
-                                                                  .withProcessInstance(suspendedPi)
+        ProcessInstance deletedProcess = processRuntime.delete(ProcessPayloadBuilder.delete()
+                                                                  .withProcessInstance(suspendedProcess)
                                                                   .build());
 
-        System.out.println("deletedPi - Process Instance: " + deletedPi);
+        System.out.println("deletedProcess - Process Instance: " + deletedProcess);
 
         processInstancePage = processRuntime.processInstances(Pageable.of(0,
                                                                           50));
