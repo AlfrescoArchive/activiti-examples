@@ -1,17 +1,21 @@
 package org.activiti.examples;
 
-import org.activiti.runtime.api.ProcessRuntime;
-import org.activiti.runtime.api.connector.Connector;
-import org.activiti.runtime.api.event.ProcessCompleted;
-import org.activiti.runtime.api.event.listener.ProcessRuntimeEventListener;
-import org.activiti.runtime.api.model.ProcessDefinition;
-import org.activiti.runtime.api.model.ProcessInstance;
-import org.activiti.runtime.api.model.builders.ProcessPayloadBuilder;
-import org.activiti.runtime.api.query.Page;
-import org.activiti.runtime.api.query.Pageable;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Map;
+import java.util.Random;
+
+import org.activiti.api.process.model.ProcessDefinition;
+import org.activiti.api.process.model.ProcessInstance;
+import org.activiti.api.process.model.builders.ProcessPayloadBuilder;
+import org.activiti.api.process.runtime.ProcessRuntime;
+import org.activiti.api.process.runtime.connector.Connector;
+import org.activiti.api.process.runtime.events.ProcessCompletedEvent;
+import org.activiti.api.process.runtime.events.listener.ProcessRuntimeEventListener;
+import org.activiti.api.runtime.shared.query.Page;
+import org.activiti.api.runtime.shared.query.Pageable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -19,23 +23,21 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Map;
-import java.util.Random;
-
 @SpringBootApplication
 @EnableScheduling
 public class DemoApplication implements CommandLineRunner {
 
     private Logger logger = LoggerFactory.getLogger(DemoApplication.class);
 
-    @Autowired
-    private ProcessRuntime processRuntime;
+    private final ProcessRuntime processRuntime;
 
-    @Autowired
-    private SecurityUtil securityUtil;
+    private final SecurityUtil securityUtil;
 
+    public DemoApplication(ProcessRuntime processRuntime,
+                           SecurityUtil securityUtil) {
+        this.processRuntime = processRuntime;
+        this.securityUtil = securityUtil;
+    }
 
     public static void main(String[] args) {
         SpringApplication.run(DemoApplication.class, args);
@@ -43,7 +45,7 @@ public class DemoApplication implements CommandLineRunner {
     }
 
     @Override
-    public void run(String... args) throws Exception {
+    public void run(String... args) {
         securityUtil.logInAs("system");
 
         Page<ProcessDefinition> processDefinitionPage = processRuntime.processDefinitions(Pageable.of(0, 10));
@@ -120,7 +122,7 @@ public class DemoApplication implements CommandLineRunner {
     }
 
     @Bean
-    public ProcessRuntimeEventListener<ProcessCompleted> processCompletedListener() {
+    public ProcessRuntimeEventListener<ProcessCompletedEvent> processCompletedListener() {
         return processCompleted -> logger.info(">>> Process Completed: '"
                 + processCompleted.getEntity().getName() +
                 "' We can send a notification to the initiator: " + processCompleted.getEntity().getInitiator());

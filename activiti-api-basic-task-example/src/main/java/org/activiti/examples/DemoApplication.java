@@ -1,16 +1,15 @@
 package org.activiti.examples;
 
-import org.activiti.runtime.api.TaskRuntime;
-import org.activiti.runtime.api.event.TaskAssigned;
-import org.activiti.runtime.api.event.TaskCompleted;
-import org.activiti.runtime.api.event.listener.TaskRuntimeEventListener;
-import org.activiti.runtime.api.model.Task;
-import org.activiti.runtime.api.model.builders.TaskPayloadBuilder;
-import org.activiti.runtime.api.query.Page;
-import org.activiti.runtime.api.query.Pageable;
+import org.activiti.api.runtime.shared.query.Page;
+import org.activiti.api.runtime.shared.query.Pageable;
+import org.activiti.api.task.model.Task;
+import org.activiti.api.task.model.builders.TaskPayloadBuilder;
+import org.activiti.api.task.runtime.TaskRuntime;
+import org.activiti.api.task.runtime.events.TaskAssignedEvent;
+import org.activiti.api.task.runtime.events.TaskCompletedEvent;
+import org.activiti.api.task.runtime.events.listener.TaskRuntimeEventListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -21,12 +20,15 @@ public class DemoApplication implements CommandLineRunner {
 
     private Logger logger = LoggerFactory.getLogger(DemoApplication.class);
 
-    @Autowired
-    private TaskRuntime taskRuntime;
+    private final TaskRuntime taskRuntime;
 
-    @Autowired
-    private SecurityUtil securityUtil;
+    private final SecurityUtil securityUtil;
 
+    public DemoApplication(TaskRuntime taskRuntime,
+                           SecurityUtil securityUtil) {
+        this.taskRuntime = taskRuntime;
+        this.securityUtil = securityUtil;
+    }
 
     public static void main(String[] args) {
         SpringApplication.run(DemoApplication.class, args);
@@ -34,7 +36,7 @@ public class DemoApplication implements CommandLineRunner {
     }
 
     @Override
-    public void run(String... args) throws Exception {
+    public void run(String... args) {
 
         // Using Security Util to simulate a logged in user
         securityUtil.logInAs("salaboy");
@@ -86,14 +88,14 @@ public class DemoApplication implements CommandLineRunner {
     }
 
     @Bean
-    public TaskRuntimeEventListener<TaskAssigned> taskAssignedListener() {
+    public TaskRuntimeEventListener<TaskAssignedEvent> taskAssignedListener() {
         return taskAssigned -> logger.info(">>> Task Assigned: '"
                 + taskAssigned.getEntity().getName() +
                 "' We can send a notification to the assginee: " + taskAssigned.getEntity().getAssignee());
     }
 
     @Bean
-    public TaskRuntimeEventListener<TaskCompleted> taskCompletedListener() {
+    public TaskRuntimeEventListener<TaskCompletedEvent> taskCompletedListener() {
         return taskCompleted -> logger.info(">>> Task Completed: '"
                 + taskCompleted.getEntity().getName() +
                 "' We can send a notification to the owner: " + taskCompleted.getEntity().getOwner());
