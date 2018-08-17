@@ -16,6 +16,7 @@ import org.activiti.api.runtime.shared.query.Page;
 import org.activiti.api.runtime.shared.query.Pageable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -29,15 +30,11 @@ public class DemoApplication implements CommandLineRunner {
 
     private Logger logger = LoggerFactory.getLogger(DemoApplication.class);
 
-    private final ProcessRuntime processRuntime;
+    @Autowired
+    private ProcessRuntime processRuntime;
 
-    private final SecurityUtil securityUtil;
-
-    public DemoApplication(ProcessRuntime processRuntime,
-                           SecurityUtil securityUtil) {
-        this.processRuntime = processRuntime;
-        this.securityUtil = securityUtil;
-    }
+    @Autowired
+    private SecurityUtil securityUtil;
 
     public static void main(String[] args) {
         SpringApplication.run(DemoApplication.class, args);

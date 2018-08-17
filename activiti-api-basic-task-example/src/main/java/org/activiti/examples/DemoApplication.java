@@ -10,6 +10,7 @@ import org.activiti.api.task.runtime.events.TaskCompletedEvent;
 import org.activiti.api.task.runtime.events.listener.TaskRuntimeEventListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -20,15 +21,12 @@ public class DemoApplication implements CommandLineRunner {
 
     private Logger logger = LoggerFactory.getLogger(DemoApplication.class);
 
-    private final TaskRuntime taskRuntime;
+    @Autowired
+    private TaskRuntime taskRuntime;
 
-    private final SecurityUtil securityUtil;
+    @Autowired
+    private SecurityUtil securityUtil;
 
-    public DemoApplication(TaskRuntime taskRuntime,
-                           SecurityUtil securityUtil) {
-        this.taskRuntime = taskRuntime;
-        this.securityUtil = securityUtil;
-    }
 
     public static void main(String[] args) {
         SpringApplication.run(DemoApplication.class, args);
