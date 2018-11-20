@@ -126,7 +126,7 @@ public class DemoApplication implements CommandLineRunner {
     public Connector tagTextConnector() {
         return integrationContext -> {
             Content contentToTag = (Content) integrationContext.getInBoundVariables().get("content");
-            contentToTag.setBody(contentToTag.getBody()+ " :) ");
+            contentToTag.getTags().add(" :) ");
             integrationContext.addOutBoundVariable("content",
                     contentToTag);
             logger.info("Final Content: " + contentToTag);
@@ -138,7 +138,7 @@ public class DemoApplication implements CommandLineRunner {
     public Connector discardTextConnector() {
         return integrationContext -> {
             Content contentToDiscard = (Content) integrationContext.getInBoundVariables().get("content");
-            contentToDiscard.setBody(contentToDiscard.getBody() + " :( ");
+            contentToDiscard.getTags().add(" :( ");
             integrationContext.addOutBoundVariable("content",
                     contentToDiscard);
             logger.info("Final Content: " + contentToDiscard);
@@ -150,7 +150,7 @@ public class DemoApplication implements CommandLineRunner {
     private Content pickRandomString() {
         String[] texts = {"hello from london", "Hi there from activiti!", "all good news over here.", "I've tweeted about activiti today.",
                 "other boring projects.", "activiti cloud - Cloud Native Java BPM"};
-        return new Content(texts[new Random().nextInt(texts.length)],false);
+        return new Content(texts[new Random().nextInt(texts.length)],false,null);
     }
 
 }
