@@ -1,10 +1,14 @@
 package org.activiti.examples;
 
 import java.text.SimpleDateFormat;
+import java.util.Collections;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Random;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.activiti.api.model.shared.model.VariableInstance;
 import org.activiti.api.process.model.ProcessDefinition;
 import org.activiti.api.process.model.ProcessInstance;
@@ -37,12 +41,16 @@ public class DemoApplication implements CommandLineRunner {
 
     private final SecurityUtil securityUtil;
 
+    private final ObjectMapper objectMapper;
+
     public DemoApplication(ProcessRuntime processRuntime,
                            TaskRuntime taskRuntime,
-                           SecurityUtil securityUtil) {
+                           SecurityUtil securityUtil,
+                           ObjectMapper objectMapper) {
         this.processRuntime = processRuntime;
         this.taskRuntime = taskRuntime;
         this.securityUtil = securityUtil;
+        this.objectMapper = objectMapper;
     }
 
     public static void main(String[] args) {
@@ -67,7 +75,7 @@ public class DemoApplication implements CommandLineRunner {
 
         securityUtil.logInAs("system");
 
-        Content content = pickRandomString();
+        LinkedHashMap content = pickRandomString();
 
         SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yy HH:mm:ss");
 
@@ -77,7 +85,7 @@ public class DemoApplication implements CommandLineRunner {
                 .start()
                 .withProcessDefinitionKey("categorizeHumanProcess")
                 .withProcessInstanceName("Processing Content: " + content)
-                .withVariable("content", content)
+                .withVariable("content", objectMapper.convertValue(content, JsonNode.class))
                 .build());
         logger.info(">>> Created Process Instance: " + processInstance);
 
@@ -98,15 +106,15 @@ public class DemoApplication implements CommandLineRunner {
                 List<VariableInstance> variables = taskRuntime.variables(TaskPayloadBuilder.variables().withTaskId(t.getId()).build());
                 VariableInstance variableInstance = variables.get(0);
                 if (variableInstance.getName().equals("content")) {
-                    Content contentToProcess = variableInstance.getValue();
+                    LinkedHashMap contentToProcess = objectMapper.convertValue(variableInstance.getValue(),LinkedHashMap.class);
                     logger.info("> Content received inside the task to approve: " + contentToProcess);
 
-                    if (contentToProcess.getBody().contains("activiti")) {
+                    if (contentToProcess.get("body").toString().contains("activiti")) {
                         logger.info("> User Approving content");
-                        contentToProcess.setApproved(true);
+                        contentToProcess.put("approved",true);
                     } else {
                         logger.info("> User Discarding content");
-                        contentToProcess.setApproved(false);
+                        contentToProcess.put("approved",false);
                     }
                     taskRuntime.complete(TaskPayloadBuilder.complete()
                             .withTaskId(t.getId()).withVariable("content", contentToProcess).build());
@@ -125,8 +133,8 @@ public class DemoApplication implements CommandLineRunner {
     @Bean
     public Connector tagTextConnector() {
         return integrationContext -> {
-            Content contentToTag = (Content) integrationContext.getInBoundVariables().get("content");
-            contentToTag.getTags().add(" :) ");
+            LinkedHashMap contentToTag = (LinkedHashMap) integrationContext.getInBoundVariables().get("content");
+            contentToTag.put("tags", Collections.singletonList(" :) "));
             integrationContext.addOutBoundVariable("content",
                     contentToTag);
             logger.info("Final Content: " + contentToTag);
@@ -137,8 +145,8 @@ public class DemoApplication implements CommandLineRunner {
     @Bean
     public Connector discardTextConnector() {
         return integrationContext -> {
-            Content contentToDiscard = (Content) integrationContext.getInBoundVariables().get("content");
-            contentToDiscard.getTags().add(" :( ");
+            LinkedHashMap contentToDiscard = (LinkedHashMap) integrationContext.getInBoundVariables().get("content");
+            contentToDiscard.put("tags", Collections.singletonList(" :( "));
             integrationContext.addOutBoundVariable("content",
                     contentToDiscard);
             logger.info("Final Content: " + contentToDiscard);
@@ -147,10 +155,12 @@ public class DemoApplication implements CommandLineRunner {
     }
 
 
-    private Content pickRandomString() {
+    private LinkedHashMap pickRandomString() {
         String[] texts = {"hello from london", "Hi there from activiti!", "all good news over here.", "I've tweeted about activiti today.",
                 "other boring projects.", "activiti cloud - Cloud Native Java BPM"};
-        return new Content(texts[new Random().nextInt(texts.length)],false,null);
+        LinkedHashMap<Object,Object> content = new LinkedHashMap<>();
+        content.put("body",texts[new Random().nextInt(texts.length)]);
+        return content;
     }
 
 }
