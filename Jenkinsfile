@@ -8,24 +8,14 @@ pipeline {
       CHARTMUSEUM_CREDS = credentials('jenkins-x-chartmuseum')
     }
     stages {
-      stage('CI Build and push snapshot') {
-        when {
-          branch 'PR-*'
-        }
-        steps {
-          container('maven') {
-            sh "mvn clean verify"
-          }
-        }
-      }
       stage('Build Release') {
         when {
-          branch 'develop'
+          branch '7.0.x'
         }
         steps {
           container('maven') {
             // ensure we're not on a detached head
-            sh "git checkout develop" 
+            sh "git checkout 7.0.x" 
             sh "git config --global credential.helper store"
 
             sh "jx step git credentials"
